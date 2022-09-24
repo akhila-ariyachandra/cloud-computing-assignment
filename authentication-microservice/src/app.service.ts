@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { AuthenticationRequest } from './dto/authentication-request.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
-  }
+  constructor(private jwtService: JwtService) {}
 
-  authenticate(data: AuthenticationRequest) {
-    return data;
+  async authenticate(data: AuthenticationRequest) {
+    const token = await this.jwtService.signAsync(data);
+
+    return { token };
   }
 }
