@@ -6,6 +6,8 @@ import { VehicleController } from './vehicle/vehicle.controller';
 import { VehicleService } from './vehicle/vehicle.service';
 import { AuthenticationController } from './authentication/authentication.controller';
 import { AuthenticationService } from './authentication/authentication.service';
+import { QuotaService } from './quota/quota.service';
+import { QuotaController } from './quota/quota.controller';
 
 @Module({
   imports: [
@@ -37,7 +39,12 @@ import { AuthenticationService } from './authentication/authentication.service';
       },
     ]),
   ],
-  controllers: [AppController, VehicleController, AuthenticationController],
-  providers: [AppService, VehicleService, AuthenticationService],
+  controllers: [
+    AppController,
+    VehicleController,
+    AuthenticationController,
+    QuotaController,
+  ],
+  providers: [AppService, VehicleService, AuthenticationService, QuotaService],
 })
 export class AppModule {}

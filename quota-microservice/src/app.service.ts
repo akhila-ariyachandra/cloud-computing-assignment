@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { InitialQuotaRequest } from './dto/initial-quota-request.dto';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  postInitialQuota(data: InitialQuotaRequest) {
+    return data.value;
   }
 }
