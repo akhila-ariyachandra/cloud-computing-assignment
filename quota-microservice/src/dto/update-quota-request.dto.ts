@@ -1,4 +1,4 @@
-export class InitialQuotaRequest {
+export class UpdateQuotaRequest {
   value: number;
   token: string;
 }

@@ -1,5 +1,7 @@
+import { UserType } from '../types';
+
 export class AuthenticationRequest {
   id: string;
-  type: 'USER' | 'ADMIN' | 'STATION';
+  type: UserType;
   password: string;
 }
