@@ -4,12 +4,16 @@ import { firstValueFrom } from 'rxjs';
 import { InitialQuotaRequest } from './dto/initial-quota-request.dto';
 import { UpdateQuotaRequest } from './dto/update-quota-request.dto';
 import { UserType } from './types';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Injectable()
 export class AppService {
+  readonly REDIS_KEY = 'initial_quota';
+
   constructor(
     @Inject('AUTHENTICATION')
     private readonly authenticationService: ClientProxy,
+    private readonly redisService: RedisService,
   ) {}
 
   private async verifyToken(token: string, types: UserType[]) {
@@ -22,16 +26,19 @@ export class AppService {
   }
 
   async postInitialQuota(data: InitialQuotaRequest) {
-    const verified = await this.verifyToken(data.token, [UserType.ADMIN]);
+    await this.verifyToken(data.token, [UserType.ADMIN]);
 
-    return data.value;
+    const client = await this.redisService.getClient();
+
+    await client.set(this.REDIS_KEY, data.value);
+
+    const updatedValue = await client.get(this.REDIS_KEY);
+
+    return updatedValue;
   }
 
   async updateInitialQuota(data: UpdateQuotaRequest) {
-    const verified = await this.verifyToken(data.token, [
-      UserType.ADMIN,
-      UserType.STATION,
-    ]);
+    await this.verifyToken(data.token, [UserType.ADMIN, UserType.STATION]);
 
     return data.value;
   }

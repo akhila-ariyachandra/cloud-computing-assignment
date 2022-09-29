@@ -1,18 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { RegisterVehicleEvent } from './event/register-vehicle-event';
+import { Inject, Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 import { RegisterVehicleRequest } from './dto/register-vehicle-request.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { UserType } from './types';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  constructor(
+    @Inject('AUTHENTICATION')
+    private readonly authenticationService: ClientProxy,
+    @Inject('QUOTA') private readonly quotaService: ClientProxy,
+  ) {}
+
+  private async verifyToken(token: string, types: UserType[]) {
+    return await firstValueFrom<boolean>(
+      this.authenticationService.send<boolean>(
+        { cmd: 'verify' },
+        { token, types },
+      ),
+    );
   }
 
-  handleRegisterVehicle(data: RegisterVehicleEvent) {
-    console.log('> VEHICLE handleRegisterVehicle: ', data);
-  }
+  async registerVehicle(data: RegisterVehicleRequest) {
+    await this.verifyToken(data.token, [UserType.ADMIN]);
 
-  registerVehicle(data: RegisterVehicleRequest) {
+    
     return data.regNo;
   }
 }

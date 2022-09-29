@@ -19,8 +19,6 @@ import { QuotaController } from './quota/quota.controller';
           port: 3001,
         },
       },
-    ]),
-    ClientsModule.register([
       {
         name: 'QUOTA',
         transport: Transport.TCP,
@@ -28,8 +26,6 @@ import { QuotaController } from './quota/quota.controller';
           port: 3002,
         },
       },
-    ]),
-    ClientsModule.register([
       {
         name: 'VEHICLE',
         transport: Transport.TCP,
