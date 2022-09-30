@@ -6,18 +6,20 @@ import { RegisterVehicleRequest } from './dto/register-vehicle-request.dto';
 export class VehicleService {
   constructor(@Inject('VEHICLE') private readonly vehicleClient: ClientProxy) {}
 
-  getVehicle(): string {
-    return 'Vehicle!!!';
+  getVehicle(regNo: string, token: string) {
+    return this.vehicleClient.send(
+      { cmd: 'vehicle_details' },
+      { regNo, token },
+    );
   }
 
   registerVehicle(
     registerVehicleRequest: RegisterVehicleRequest,
     token: string,
   ) {
-    this.vehicleClient.send(
+    return this.vehicleClient.send(
       { cmd: 'register_vehicle' },
       { ...registerVehicleRequest, token },
     );
-    return registerVehicleRequest.regNo;
   }
 }

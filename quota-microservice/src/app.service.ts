@@ -5,6 +5,7 @@ import { InitialQuotaRequest } from './dto/initial-quota-request.dto';
 import { UpdateQuotaRequest } from './dto/update-quota-request.dto';
 import { UserType } from './types';
 import { RedisService } from '@liaoliaots/nestjs-redis';
+import { CheckQuotaRequest } from './dto/check-quota-request.dto';
 
 @Injectable()
 export class AppService {
@@ -37,9 +38,26 @@ export class AppService {
     return updatedValue;
   }
 
+  async checkQuota(data: CheckQuotaRequest) {
+    await this.verifyToken(data.token, [UserType.ADMIN, UserType.STATION]);
+
+    const client = await this.redisService.getClient();
+    const currentQuota = await client.get(this.REDIS_KEY);
+
+    return currentQuota ? parseInt(currentQuota) : 0;
+  }
+
   async updateInitialQuota(data: UpdateQuotaRequest) {
     await this.verifyToken(data.token, [UserType.ADMIN, UserType.STATION]);
 
-    return data.value;
+    const client = await this.redisService.getClient();
+    const currentValue = await client.get(this.REDIS_KEY);
+
+    const currentQuota = parseInt(currentValue);
+    const newValue = currentQuota - data.value;
+
+    await client.set(this.REDIS_KEY, newValue < 0 ? newValue : 0);
+
+    return newValue;
   }
 }
