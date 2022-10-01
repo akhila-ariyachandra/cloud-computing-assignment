@@ -3,6 +3,8 @@ FROM node:alpine AS development
 WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY .env ./env
 
 RUN npm install
 
@@ -19,11 +21,14 @@ WORKDIR /usr/src/app
 
 # Files required by pnpm install
 COPY package.json package-lock.json ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY .env ./env
 
-RUN npm install --only=prod
+RUN npm install
 
 COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
+EXPOSE 3003
 CMD ["node", "dist/main"]
